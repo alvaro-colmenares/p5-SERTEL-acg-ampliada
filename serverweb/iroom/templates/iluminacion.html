@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block head %}
+	
+{% endblock %}
+{% block body %}
+{% if session.logged_in %}
+  
+  <div id="actuadores">
+    <h2>Iluminación</h2>
+  
+ <script type=text/javascript>
+  $(function() {
+    $(".button").click(function() {
+         $.ajax({
+            type: "GET",
+            url: "/setcolor",
+            contentType: "application/json; charset=utf-8",
+            data: { color: $('input[name="colorLight"]').val() },
+            success: function(data) {
+                // $('#result').text(data.color);
+            }
+        });     
+    });
+  });
+</script>
+  <div id="result"></div>
+  <input type="color" id="colorLight"  name="colorLight" value="#0000ff">
+  <button class="button" type="button">Envía color</button>
+  </div>	
+  {% endif%}	   
+{% endblock %}

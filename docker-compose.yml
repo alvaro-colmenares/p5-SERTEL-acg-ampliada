@@ -1,0 +1,28 @@
+version: '2.1'
+
+services:
+ 
+  serverweb:
+    build:
+      context: serverweb
+    image: serverweb:latest
+    ports:
+      - "80:5000"
+    volumes:
+      - ./serverweb/iroom:/iroom
+    networks:
+      mynet:
+          ipv4_address: 172.0.0.3
+
+networks:
+  mynet:
+    name: mynet-network
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+       driver: default
+       config:
+        - subnet: 172.0.0.0/24
+        - gateway: 172.0.0.1
+

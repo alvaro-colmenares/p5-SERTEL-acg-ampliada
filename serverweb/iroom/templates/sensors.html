@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block head %}
+	{% if session.logged_in %}  
+   
+    <script type="text/javascript">
+		var sse = new EventSource("/update_sensor");
+    	sse.onmessage = function(event) {
+    		var sensor = event.data;
+    		obj = JSON.parse(sensor)
+    	  	if (obj.tipo == 'temperatura') {
+           		document.getElementById('ct').innerHTML = "Temperatura: "+obj.valor;
+        	 	document.getElementById('temperatura').setAttribute('value', obj.valor);
+        	};
+        	if (obj.tipo == 'humedad') {
+           		document.getElementById('ch').innerHTML = "Humedad: "+obj.valor;
+        	 	document.getElementById('humedad').setAttribute('value', obj.valor);
+        	};
+        	if (obj.tipo == 'luz') {
+				    document.getElementById('cl').innerHTML = "Nivel de Luz: "+obj.valor;
+        	 	document.getElementById('luz').setAttribute('value', obj.valor);
+        	};
+        	if (obj.tipo == 'sonido') {
+           		document.getElementById('cs').innerHTML = "Nivel de sonido: "+obj.valor;
+        	 	document.getElementById('sonido').setAttribute('value', obj.valor);
+        	};
+        	if (obj.tipo == 'movimiento') {
+           		document.getElementById('cm').innerHTML = "Movimiento: " + obj.valor;
+        	 	document.getElementById('movimiento').setAttribute('value', obj.valor);
+        	};
+    	};
+    
+	</script>
+     <script type="text/javascript">
+	var temperatura = 0, humedad=0, luz=0, sonido=0;
+
+	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
+	setInterval(() => {
+	temperatura = document.getElementById("temperatura");
+	// Comprobar si el valor del elemento es mayor que 25
+	if (temperatura.value > 21)
+	{
+		// Mostrar una alerta
+		alert("¡La temperatura ha superado el valor de 21!");
+  	}
+	}, 1000);
+	     
+	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
+        setInterval(() => {
+        humedad = document.getElementById("humedad");
+        // Comprobar si el valor del elemento es mayor que 25
+        if (humedad.value > 58)
+        {
+                // Mostrar una alerta
+                alert("¡La humedad ha superado el valor de 58!");
+        }
+        }, 1000);
+
+	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
+        setInterval(() => {
+        luz = document.getElementById("luz");
+        // Comprobar si el valor del elemento es mayor que 25
+        if (luz.value > 95)
+        {
+                // Mostrar una alerta
+                alert("¡La luz ha superado el valor de 95!");
+        }
+        }, 1000);
+
+	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
+        setInterval(() => {
+        sonido = document.getElementById("sonido");
+        // Comprobar si el valor del elemento es mayor que 25
+        if (sonido.value > 79)
+        {
+                // Mostrar una alerta
+                alert("¡El sonido ha superado el valor de 79!");
+        }
+        }, 1000);
+	
+
+     </script>
+  {% endif%}
+{% endblock %}
+{% block body %}
+
+  {% if session.logged_in %}
+    <div id="sensores">
+    <h2>Sensores</h2>
+  		 <div id="ct"></div> <meter id="temperatura" value="0" min="0" max="50" low="18" high="26"></meter> 
+  		 <div id="ch"></div> <meter id="humedad" value="0" min="0" max="100" low="18" high="26"></meter> 
+  		 <div id="cl"></div> <meter id="luz" value="0" min="0" max="100" low="18" high="26"></meter> 
+  		 <div id="cs"></div> <meter id="sonido" value="0" min="0" max="100" low="18" high="26"></meter> 
+  		 <div id="cm"></div> <meter id="movimiento" value="0" min="0" max="1" low="0" high="1"></meter>
+   </div>
+  <form method="POST" action="/post_acortador">
+	  <label>Codigo</label>
+	  <input id="codigo" name="codigo" type="text">
+	  <label>URL</label>
+	  <input id="url" name="url" type="text">
+	  <input type="submit">
+  </form>
+  </div>	
+  {% endif%}	   
+{% endblock %}
