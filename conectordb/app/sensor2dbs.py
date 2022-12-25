@@ -7,13 +7,13 @@ import json
 import urllib3
 import mysql.connector
 
-db = mysql.connector.connect(host = "localhost", user = "root", passwd = "1234", db = "iroom")
+db = mysql.connector.connect(host = "172.0.0.3", user = "root", passwd = "secret", db = "iroom")
 
 type_sensor = ['temperature', 'humidity', 'light', 'sound', 'motion']
 last_value = [0,0,0,0,0,0,0,0]
 
 #PONER LA IP DE LA MÁQUINA VIRTUAL EN LA QUE ESTÉ CORRIENDO EL EMULADOR
-server = 'http://127.0.0.1:8000/'
+server = 'http://172.0.0.6:8000/'
 #server = 'http://10.0.21.132:8000/'
 http = urllib3.PoolManager()
 def updateSensor(code):
@@ -63,6 +63,7 @@ def controlLightColor():
                 print ('Error al consultar de base de datos o conectar con iroom')
 
 if __name__ == "__main__":
+        time.sleep(15)
         cursor=db.cursor(buffered=True)
         cursor.execute ("""DROP table sensors""")
         cursor.execute ("""create table sensors( time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, nombre VARCHAR(15), valor INTEGER)""")

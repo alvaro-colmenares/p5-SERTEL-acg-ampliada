@@ -3,16 +3,70 @@ version: '2.1'
 services:
  
   serverweb:
+    env_file:
+      - serverweb/iroom/config/iroom.env
     build:
       context: serverweb
     image: serverweb:latest
     ports:
       - "80:5000"
+    depends_on:
+      - mysql
     volumes:
       - ./serverweb/iroom:/iroom
     networks:
       mynet:
-          ipv4_address: 172.0.0.3
+        ipv4_address: 172.0.0.2
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    expose:
+      - "3306"
+    volumes:
+    - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: iroom
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      mynet:
+        ipv4_address: 172.0.0.3
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=172.0.0.3
+    networks:
+      mynet:
+        ipv4_address: 172.0.0.4
+  conectordb:
+    build:
+      context: conectordb
+    image: conectordb:latest
+    volumes:
+      - ./conectordb/app:/app
+    depends_on:
+      - mysql
+    networks:
+      mynet:
+        ipv4_address: 172.0.0.5
+  emulador:
+    build:
+      context: emulador
+    image: emulador:latest
+    volumes:
+      - ./emulador/app:/app
+    ports:
+    - 1000:8000
+    depends_on:
+      - mysql
+      - conectordb
+    networks:
+      mynet:
+        ipv4_address: 172.0.0.6
 
 networks:
   mynet:
@@ -24,5 +78,5 @@ networks:
        driver: default
        config:
         - subnet: 172.0.0.0/24
-        - gateway: 172.0.0.1
+          gateway: 172.0.0.1
 

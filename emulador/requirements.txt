@@ -1,0 +1,5 @@
+Flask
+urllib3
+mysql-connector-python
+flask-mysql
+Flask-RESTful

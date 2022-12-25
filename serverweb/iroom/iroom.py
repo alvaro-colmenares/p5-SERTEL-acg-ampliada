@@ -5,13 +5,18 @@ from flask import Flask, url_for, session, render_template, Response, request, f
 from flaskext.mysql import MySQL
 import json
 import time
-
+import os
 
 mysql = MySQL()
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config.from_envvar('IROOM_SETTINGS', silent=True)
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']    
+app.config['MYSQL_DATABASE_USER'] = os.environ['MYSQL_DATABASE_USER']
+app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['MYSQL_DATABASE_PASSWORD']
+app.config['MYSQL_DATABASE_DB'] = os.environ['MYSQL_DATABASE_DB']
+app.config['MYSQL_DATABASE_HOST'] = os.environ['MYSQL_DATABASE_HOST']
+#app.config.from_envvar('IROOM_SETTINGS', silent=True)
 mysql.init_app(app)
 last_value = [0,0,0,0,0]
 type_sensor = ['temperature', 'humidity', 'light', 'sound', 'motion']
@@ -70,9 +75,9 @@ def sensors():
 def login():
 	error = None
 	if request.method == 'POST':
-		if request.form['username'] != app.config['USERNAME']:
+		if request.form['username'] != os.environ['USERNAME']:
 			error = 'Invalid username'
-		elif request.form['password'] != app.config['PASSWORD']:
+		elif request.form['password'] != os.environ['PASSWORD']:
 			error = 'Invalid password'
 		else:
 			session['logged_in'] = True
@@ -113,4 +118,3 @@ if __name__=='__main__':
 	with app.test_request_context():
 		app.debug = True
 		app.run(host ='0.0.0.0')
-		
