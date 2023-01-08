@@ -1,36 +1,8 @@
 {% extends "layout.html" %}
 {% block head %}
 	{% if session.logged_in %}  
-   
     <script type="text/javascript">
-		var sse = new EventSource("/update_sensor");
-    	sse.onmessage = function(event) {
-    		var sensor = event.data;
-    		obj = JSON.parse(sensor)
-    	  	if (obj.tipo == 'temperatura') {
-           		document.getElementById('ct').innerHTML = "Temperatura: "+obj.valor;
-        	 	document.getElementById('temperatura').setAttribute('value', obj.valor);
-        	};
-        	if (obj.tipo == 'humedad') {
-           		document.getElementById('ch').innerHTML = "Humedad: "+obj.valor;
-        	 	document.getElementById('humedad').setAttribute('value', obj.valor);
-        	};
-        	if (obj.tipo == 'luz') {
-				    document.getElementById('cl').innerHTML = "Nivel de Luz: "+obj.valor;
-        	 	document.getElementById('luz').setAttribute('value', obj.valor);
-        	};
-        	if (obj.tipo == 'sonido') {
-           		document.getElementById('cs').innerHTML = "Nivel de sonido: "+obj.valor;
-        	 	document.getElementById('sonido').setAttribute('value', obj.valor);
-        	};
-        	if (obj.tipo == 'movimiento') {
-           		document.getElementById('cm').innerHTML = "Movimiento: " + obj.valor;
-        	 	document.getElementById('movimiento').setAttribute('value', obj.valor);
-        	};
-    	};
-    
-	</script>
-     <script type="text/javascript">
+	/*
 	var temperatura = 0, humedad=0, luz=0, sonido=0;
 
 	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
@@ -75,15 +47,172 @@
                 // Mostrar una alerta
                 alert("¡El sonido ha superado el valor de 79!");
         }
-        }, 1000);
-	
-
+        }, 1000);*/
      </script>
+<script type="text/javascript">
+window.onload = function () {
+
+var dataPoints1 = [];
+var dataPoints2 = [];
+var dataPoints3 = [];
+var dataPoints4 = [];
+
+var options = {
+	title: {
+		text: "Sensores"
+	},
+	axisX: {
+		title: "Actualización cada 1s"
+	},
+	axisY: {
+		suffix: ""
+	},
+	toolTip: {
+		shared: true
+	},
+	legend: {
+		cursor: "pointer",
+		verticalAlign: "top",
+		fontSize: 15,
+		fontColor: "dimGrey",
+		itemclick: toggleDataSeries
+	},
+	data: [{
+		type: "line",
+		xValueType: "dateTime",
+		yValueFormatString: "###.00Wh",
+		xValueFormatString: "hh:mm:ss TT",
+		showInLegend: true,
+		name: "Temperatura",
+		dataPoints: dataPoints1
+	},
+	{
+		type: "line",
+		xValueType: "dateTime",
+		yValueFormatString: "###.00Wh",
+		showInLegend: true,
+		name: "Humedad",
+		dataPoints: dataPoints2
+	}, {
+		type: "line",
+		xValueType: "dateTime",
+		yValueFormatString: "###.00Wh",
+		showInLegend: true,
+		name: "Luz",
+		dataPoints: dataPoints3
+	},
+	{
+		type: "line",
+		xValueType: "dateTime",
+		yValueFormatString: "###.00Wh",
+		showInLegend: true,
+		name: "Sonido",
+		dataPoints: dataPoints4
+	}]
+};
+
+var chart = $("#chartContainer").CanvasJSChart(options);
+
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+
+var updateInterval = 1000;
+// initial value
+var yValue1 = 0;
+var yValue2 = 0;
+var yValue3 = 0;
+var yValue4 = 0;
+
+var time = new Date;
+// starting at 10.00 am
+time.setHours(10);
+time.setMinutes(00);
+time.setSeconds(00);
+time.setMilliseconds(00);
+
+function updateChart(count) {
+	count = count || 1;
+	for (var i = 0; i < count; i++) {
+		time.setTime(time.getTime() + updateInterval);
+	
+		var sse = new EventSource("/update_sensor");
+    	sse.onmessage = function(event) {
+    		var sensor = event.data;
+    		obj = JSON.parse(sensor)
+    	  	if (obj.tipo == 'temperatura') {
+           		yValue1=obj.valor;
+				document.getElementById('ct').innerHTML = "Temperatura: "+obj.valor;
+        	 	document.getElementById('temperatura').setAttribute('value', obj.valor);
+        	};
+			if (obj.tipo == 'humedad') {
+           		yValue2=obj.valor;
+				document.getElementById('ch').innerHTML = "Humedad: "+obj.valor;
+        	 	document.getElementById('humedad').setAttribute('value', obj.valor);
+        	};
+			if (obj.tipo == 'luz') {
+           		yValue3=obj.valor;
+				document.getElementById('cl').innerHTML = "Nivel de Luz: "+obj.valor;
+        	 	document.getElementById('luz').setAttribute('value', obj.valor);
+        	};
+			if (obj.tipo == 'sonido') {
+           		yValue4=obj.valor;
+				document.getElementById('cs').innerHTML = "Nivel de sonido: "+obj.valor;
+        	 	document.getElementById('sonido').setAttribute('value', obj.valor);
+        	};
+			if (obj.tipo == 'movimiento') {
+           		document.getElementById('cm').innerHTML = "Movimiento: " + obj.valor;
+        	 	document.getElementById('movimiento').setAttribute('value', obj.valor);
+        	};
+		};
+        	
+
+
+		// pushing the new values
+		dataPoints1.push({
+			x: time.getTime(),
+			y: yValue1
+		});
+		dataPoints2.push({
+			x: time.getTime(),
+			y: yValue2
+		});
+		dataPoints3.push({
+			x: time.getTime(),
+			y: yValue3
+		});
+		dataPoints4.push({
+			x: time.getTime(),
+			y: yValue4
+		});
+	}
+
+	// updating legend text with  updated with y Value 
+	options.data[0].legendText = "Temperatura : " + yValue1;
+	options.data[1].legendText = "Humedad : " + yValue2;
+	options.data[2].legendText = "Luz : " + yValue3;
+	options.data[3].legendText = "Sonido : " + yValue4;
+	$("#chartContainer").CanvasJSChart().render();
+}
+// generates first set of dataPoints 
+updateChart(100);
+setInterval(function () { updateChart() }, updateInterval);
+
+}
+
+</script>
   {% endif%}
 {% endblock %}
 {% block body %}
 
   {% if session.logged_in %}
+  	<p>Soy el servidor {{server_name}}</p>
     <div id="sensores">
     <h2>Sensores</h2>
   		 <div id="ct"></div> <meter id="temperatura" value="0" min="0" max="50" low="18" high="26"></meter> 
@@ -99,6 +228,10 @@
 	  <input id="url" name="url" type="text">
 	  <input type="submit">
   </form>
-  </div>	
+ 
+  
+  </div>
+  <div id="chartContainer" style="height: 370px; width: 65%; margin: auto;"></div>
+  	
   {% endif%}	   
 {% endblock %}

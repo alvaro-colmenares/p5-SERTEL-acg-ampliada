@@ -6,6 +6,7 @@ from flaskext.mysql import MySQL
 import json
 import time
 import os
+import socket
 
 mysql = MySQL()
 
@@ -68,7 +69,8 @@ def main():
 		
 @app.route('/sensors', methods=['GET','POST'])
 def sensors():
-        return render_template('sensors.html')
+        hostname = socket.gethostname()
+        return render_template('sensors.html', server_name=hostname)
 
 
 @app.route('/login', methods=['GET', 'POST'])
