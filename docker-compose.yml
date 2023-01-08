@@ -8,15 +8,17 @@ services:
     build:
       context: serverweb
     image: serverweb:latest
-    ports:
-      - "80:5000"
+    expose:
+      - "5000"
     depends_on:
       - mysql
+      - emulador
+      - conectordb
     volumes:
       - ./serverweb/iroom:/iroom
     networks:
-      mynet:
-        ipv4_address: 172.0.0.2
+      - mynet
+        
   mysql:
     image: mysql:8.0
     container_name: mysql-container
@@ -67,6 +69,16 @@ services:
     networks:
       mynet:
         ipv4_address: 172.0.0.6
+  balancer:
+    build:
+      context: ./balancer
+    image: balancer:latest
+    ports:
+        - "80:80"
+    depends_on:
+        - serverweb
+    networks:
+      - mynet
 
 networks:
   mynet:
