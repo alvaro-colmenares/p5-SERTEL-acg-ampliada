@@ -60,7 +60,7 @@ def redireccionar(codigo):
         return redirect('/', code=307)
 
 @app.route('/update_sensor')
-def sse_request():	  
+def sse_request():    	  
         return Response(event_sensor(), mimetype='text/event-stream')
 	  
 @app.route('/', methods=['GET','POST'])
@@ -119,4 +119,5 @@ def setcolor():
 if __name__=='__main__':
 	with app.test_request_context():
 		app.debug = True
-		app.run(host ='0.0.0.0')
+		app.run(host ='0.0.0.0', threaded=True)
+        

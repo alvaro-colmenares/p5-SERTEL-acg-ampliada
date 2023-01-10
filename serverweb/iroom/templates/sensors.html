@@ -1,54 +1,6 @@
 {% extends "layout.html" %}
 {% block head %}
 	{% if session.logged_in %}  
-    <script type="text/javascript">
-	/*
-	var temperatura = 0, humedad=0, luz=0, sonido=0;
-
-	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
-	setInterval(() => {
-	temperatura = document.getElementById("temperatura");
-	// Comprobar si el valor del elemento es mayor que 25
-	if (temperatura.value > 21)
-	{
-		// Mostrar una alerta
-		alert("¡La temperatura ha superado el valor de 21!");
-  	}
-	}, 1000);
-	     
-	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
-        setInterval(() => {
-        humedad = document.getElementById("humedad");
-        // Comprobar si el valor del elemento es mayor que 25
-        if (humedad.value > 58)
-        {
-                // Mostrar una alerta
-                alert("¡La humedad ha superado el valor de 58!");
-        }
-        }, 1000);
-
-	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
-        setInterval(() => {
-        luz = document.getElementById("luz");
-        // Comprobar si el valor del elemento es mayor que 25
-        if (luz.value > 95)
-        {
-                // Mostrar una alerta
-                alert("¡La luz ha superado el valor de 95!");
-        }
-        }, 1000);
-
-	// Crear un bucle que se ejecute cada segundo (1000 milisegundos)
-        setInterval(() => {
-        sonido = document.getElementById("sonido");
-        // Comprobar si el valor del elemento es mayor que 25
-        if (sonido.value > 79)
-        {
-                // Mostrar una alerta
-                alert("¡El sonido ha superado el valor de 79!");
-        }
-        }, 1000);*/
-     </script>
 <script type="text/javascript">
 window.onload = function () {
 
@@ -136,13 +88,7 @@ time.setHours(10);
 time.setMinutes(00);
 time.setSeconds(00);
 time.setMilliseconds(00);
-
-function updateChart(count) {
-	count = count || 1;
-	for (var i = 0; i < count; i++) {
-		time.setTime(time.getTime() + updateInterval);
-	
-		var sse = new EventSource("/update_sensor");
+var sse = new EventSource("/update_sensor");
     	sse.onmessage = function(event) {
     		var sensor = event.data;
     		obj = JSON.parse(sensor)
@@ -171,7 +117,11 @@ function updateChart(count) {
         	 	document.getElementById('movimiento').setAttribute('value', obj.valor);
         	};
 		};
-        	
+
+function updateChart(count) {
+	count = count || 1;
+	for (var i = 0; i < count; i++) {
+		time.setTime(time.getTime() + updateInterval);	      	
 
 
 		// pushing the new values
